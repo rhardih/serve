@@ -9,7 +9,12 @@ go get github.com/rhardih/serve
 
 ## Usage
 
+If $GOPATH/bin is in your $PATH, simply:
+
+
 ```bash
+$> serve -h
+
 NAME:
    serve - deliver content of current directory via http
 
