@@ -8,6 +8,13 @@ import (
 	"os"
 )
 
+func logHandler(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		println(r.Method, r.RequestURI)
+		h.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	app := cli.NewApp()
 
@@ -16,8 +23,9 @@ func main() {
 	app.Version = "0.0.1"
 
 	var gzip bool
-	var port int = 8080
+	var port int
 	var path string = "./"
+	var logging bool
 
 	app.Flags = []cli.Flag{
 		cli.BoolFlag{
@@ -31,6 +39,11 @@ func main() {
 			Value:       8080,
 			Destination: &port,
 		},
+		cli.BoolFlag{
+			Name:        "logging, l",
+			Usage:       "enable logging output",
+			Destination: &logging,
+		},
 	}
 
 	app.Action = func(c *cli.Context) {
@@ -42,6 +55,10 @@ func main() {
 
 		if gzip {
 			handler = httpgzip.NewHandler(handler)
+		}
+
+		if logging {
+			handler = logHandler(handler)
 		}
 
 		println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))

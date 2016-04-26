@@ -28,6 +28,7 @@ COMMANDS:
 GLOBAL OPTIONS:
    --gzip, -g		enable gzip encoding
    --port, -p "8080"	specify port for listening
+   --logging, -l	enable logging output
    --help, -h		show help
    --version, -v	print the version
    
