@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/daaku/go.httpgzip"
+	"log"
 	"net/http"
 	"os"
 )
 
 func logHandler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		println(r.Method, r.RequestURI)
+		log.Println(r.Method, r.RequestURI)
 		h.ServeHTTP(w, r)
 	})
 }
@@ -61,7 +62,7 @@ func main() {
 			handler = logHandler(handler)
 		}
 
-		println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))
+		log.Println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))
 
 		http.ListenAndServe(fmt.Sprintf(":%v", port), handler)
 	}
