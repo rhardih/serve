@@ -64,7 +64,7 @@ func main() {
 
 		log.Println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))
 
-		http.ListenAndServe(fmt.Sprintf(":%v", port), handler)
+		log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", port), handler))
 	}
 
 	app.Run(os.Args)
