@@ -1,5 +1,7 @@
 # serve
-Simple http server for localhost development with a flag for enabling gzip
+Simple http server for localhost development.
+
+It's like `python -m SimpleHTTPServer`, but with support for gzip and HTTP/2.
 
 ## Installation
 
@@ -12,7 +14,7 @@ go get github.com/rhardih/serve
 If $GOPATH/bin is in your $PATH, simply:
 
 
-```bash
+```
 $> serve -h
 
 NAME:
@@ -22,13 +24,14 @@ USAGE:
    serve [global options] command [command options] [arguments...]
    
 VERSION:
-   0.0.1
+   1.0.0
    
 COMMANDS:
 GLOBAL OPTIONS:
    --gzip, -g		enable gzip encoding
    --port, -p "8080"	specify port for listening
    --logging, -l	enable logging output
+   --http2, -2		enable http2, this generates a self signed certificate, if one isn't already present; cert.pem, key.pem
    --help, -h		show help
    --version, -v	print the version
    
