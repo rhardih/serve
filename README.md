@@ -36,3 +36,7 @@ GLOBAL OPTIONS:
    --version, -v	print the version
    
 ```
+
+## Note
+
+Code for generating self-signed certificate for HTTP/2 was taken from example code in `src/crypto/tls/generate_cert.go`, available at [https://golang.org/src/crypto/tls/generate_cert.go](https://golang.org/src/crypto/tls/generate_cert.go).
