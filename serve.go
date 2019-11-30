@@ -144,23 +144,27 @@ func main() {
 
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name:        "gzip, g",
+				Name:        "gzip",
+				Aliases:     []string{"g"},
 				Usage:       "enable gzip encoding",
 				Destination: &gzip,
 			},
 			&cli.IntFlag{
-				Name:        "port, p",
+				Name:        "port",
+				Aliases:     []string{"p"},
 				Usage:       "specify port for listening",
 				Value:       8080,
 				Destination: &port,
 			},
 			&cli.BoolFlag{
-				Name:        "logging, l",
+				Name:        "logging",
+				Aliases:     []string{"l"},
 				Usage:       "enable logging output",
 				Destination: &logging,
 			},
 			&cli.BoolFlag{
-				Name:        "http2, 2",
+				Name:        "http2",
+				Aliases:     []string{"2"},
 				Usage:       "enable http2, this generates a self signed certificate, if one isn't already present; cert.pem, key.pem",
 				Destination: &http2,
 			},
