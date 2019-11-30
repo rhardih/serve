@@ -1,4 +1,4 @@
-module serve
+module github.com/rhardih/serve
 
 go 1.13
 
