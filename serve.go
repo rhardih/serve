@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/codegangsta/cli"
-	"github.com/daaku/go.httpgzip"
 	"log"
 	"net/http"
 	"os"
+
+	httpgzip "github.com/daaku/go.httpgzip"
+	"github.com/urfave/cli/v2"
 
 	"crypto/ecdsa"
 	"crypto/rand"
@@ -124,73 +125,76 @@ func generateSelfSignedCert() {
 }
 
 func main() {
-	app := cli.NewApp()
-
-	app.Name = "serve"
-	app.Usage = "deliver content of current directory via http"
-	app.Version = "1.0.0"
-
 	var gzip bool
 	var port int
 	var path string = "./"
 	var logging bool
 	var http2 bool
 
-	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:        "gzip, g",
-			Usage:       "enable gzip encoding",
-			Destination: &gzip,
+	app := &cli.App{
+		Name:    "serve",
+		Usage:   "deliver content of current directory via http/https",
+		Version: "1.1.0",
+
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:        "gzip, g",
+				Usage:       "enable gzip encoding",
+				Destination: &gzip,
+			},
+			&cli.IntFlag{
+				Name:        "port, p",
+				Usage:       "specify port for listening",
+				Value:       8080,
+				Destination: &port,
+			},
+			&cli.BoolFlag{
+				Name:        "logging, l",
+				Usage:       "enable logging output",
+				Destination: &logging,
+			},
+			&cli.BoolFlag{
+				Name:        "http2, 2",
+				Usage:       "enable http2, this generates a self signed certificate, if one isn't already present; cert.pem, key.pem",
+				Destination: &http2,
+			},
 		},
-		cli.IntFlag{
-			Name:        "port, p",
-			Usage:       "specify port for listening",
-			Value:       8080,
-			Destination: &port,
-		},
-		cli.BoolFlag{
-			Name:        "logging, l",
-			Usage:       "enable logging output",
-			Destination: &logging,
-		},
-		cli.BoolFlag{
-			Name:        "http2, 2",
-			Usage:       "enable http2, this generates a self signed certificate, if one isn't already present; cert.pem, key.pem",
-			Destination: &http2,
-		},
-	}
 
-	app.Action = func(c *cli.Context) {
-		if c.NArg() > 0 {
-			path = c.Args()[0]
-		}
-
-		handler := http.FileServer(http.Dir(path))
-
-		if gzip {
-			handler = httpgzip.NewHandler(handler)
-		}
-
-		if logging {
-			handler = logHandler(handler)
-		}
-
-		log.Println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))
-
-		var err error
-
-		if http2 {
-			if _, err := os.Stat("cert.pem"); os.IsNotExist(err) {
-				generateSelfSignedCert()
+		Action: func(c *cli.Context) error {
+			if c.NArg() > 0 {
+				path = c.Args().Get(0)
 			}
 
-			err = http.ListenAndServeTLS(fmt.Sprintf(":%v", port), "cert.pem", "key.pem", handler)
-		} else {
-			err = http.ListenAndServe(fmt.Sprintf(":%v", port), handler)
-		}
+			handler := http.FileServer(http.Dir(path))
 
-		log.Fatal(err)
+			if gzip {
+				handler = httpgzip.NewHandler(handler)
+			}
+
+			if logging {
+				handler = logHandler(handler)
+			}
+
+			log.Println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))
+
+			var err error
+
+			if http2 {
+				if _, err := os.Stat("cert.pem"); os.IsNotExist(err) {
+					generateSelfSignedCert()
+				}
+
+				err = http.ListenAndServeTLS(fmt.Sprintf(":%v", port), "cert.pem", "key.pem", handler)
+			} else {
+				err = http.ListenAndServe(fmt.Sprintf(":%v", port), handler)
+			}
+
+			return err
+		},
 	}
 
-	app.Run(os.Args)
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
