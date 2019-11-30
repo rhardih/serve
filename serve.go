@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	httpgzip "github.com/daaku/go.httpgzip"
 	"github.com/urfave/cli/v2"
@@ -130,6 +133,9 @@ func main() {
 	var path string = "./"
 	var logging bool
 	var http2 bool
+	var stop = make(chan os.Signal, 1)
+	var err error
+	var server *http.Server
 
 	app := &cli.App{
 		Name:    "serve",
@@ -175,25 +181,54 @@ func main() {
 				handler = logHandler(handler)
 			}
 
-			log.Println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))
+			server = &http.Server{
+				Addr:    fmt.Sprintf(":%d", port),
+				Handler: handler,
+			}
 
-			var err error
-
-			if http2 {
+			serveHttps := func() {
 				if _, err := os.Stat("cert.pem"); os.IsNotExist(err) {
 					generateSelfSignedCert()
 				}
 
-				err = http.ListenAndServeTLS(fmt.Sprintf(":%v", port), "cert.pem", "key.pem", handler)
-			} else {
-				err = http.ListenAndServe(fmt.Sprintf(":%v", port), handler)
+				err = server.ListenAndServeTLS("cert.pem", "key.pem")
+				if err != nil {
+					log.Fatalf("ListenAndServeTLS error: %s", err)
+				}
 			}
 
-			return err
+			serveHttp := func() {
+				err = server.ListenAndServe()
+				if err != nil {
+					log.Fatalf("ListenAndServe error: %s", err)
+				}
+			}
+
+			if http2 {
+				go serveHttps()
+			} else {
+				go serveHttp()
+			}
+
+			log.Println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))
+
+			signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+			<-stop
+
+			log.Print("Stopping.")
+
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			if err := server.Shutdown(ctx); err != nil {
+				log.Fatalf("%s", err)
+			}
+
+			return nil
 		},
 	}
 
-	err := app.Run(os.Args)
+	err = app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
 	}
