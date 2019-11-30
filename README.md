@@ -15,26 +15,28 @@ If $GOPATH/bin is in your $PATH, simply:
 
 
 ```
-$> serve -h
-
+$ serve -h
 NAME:
-   serve - deliver content of current directory via http
+   serve - deliver content of current directory via http/https
 
 USAGE:
    serve [global options] command [command options] [arguments...]
-   
+
 VERSION:
-   1.0.0
-   
+   1.1.0
+
 COMMANDS:
+   help, h  Shows a list of commands or help for one command
+
 GLOBAL OPTIONS:
-   --gzip, -g		enable gzip encoding
-   --port, -p "8080"	specify port for listening
-   --logging, -l	enable logging output
-   --http2, -2		enable http2, this generates a self signed certificate, if one isn't already present; cert.pem, key.pem
-   --help, -h		show help
-   --version, -v	print the version
-   
+   --gzip, -g              enable gzip encoding (default: false)
+   --port value, -p value  specify port for listening (default: 8080)
+   --logging, -l           enable logging output (default: false)
+   --http2, -2             enable http2, this generates a self signed
+                           certificate, if one isn't already present; cert.pem,
+                           key.pem (default: false)
+   --help, -h              show help (default: false)
+   --version, -v           print the version (default: false)
 ```
 
 ## Note
