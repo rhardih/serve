@@ -140,7 +140,7 @@ func main() {
 	app := &cli.App{
 		Name:    "serve",
 		Usage:   "deliver content of current directory via http/https",
-		Version: "1.1.0",
+		Version: "1.1.1",
 
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
