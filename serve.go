@@ -31,6 +31,15 @@ func logHandler(h http.Handler) http.Handler {
 	})
 }
 
+func customHeadersHandler(h http.Handler, headersMap map[string]string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for key, value := range headersMap {
+			w.Header().Set(key, value)
+		}
+		h.ServeHTTP(w, r)
+	})
+}
+
 func publicKey(priv interface{}) interface{} {
 	switch k := priv.(type) {
 	case *rsa.PrivateKey:
@@ -133,6 +142,8 @@ func main() {
 	var path string = "./"
 	var logging bool
 	var http2 bool
+	var headerFlags cli.StringSlice
+	var headersMap map[string]string
 	var stop = make(chan os.Signal, 1)
 	var err error
 	var server *http.Server
@@ -168,6 +179,12 @@ func main() {
 				Usage:       "enable http2, this generates a self signed certificate, if one isn't already present; cert.pem, key.pem",
 				Destination: &http2,
 			},
+			&cli.StringSliceFlag{
+				Name:        "header",
+				Aliases:     []string{"H"},
+				Usage:       "custom header(s) to add to the response (can be repeated multiple times)",
+				Destination: &headerFlags,
+			},
 		},
 
 		Action: func(c *cli.Context) error {
@@ -183,6 +200,21 @@ func main() {
 
 			if logging {
 				handler = logHandler(handler)
+			}
+
+			headers := headerFlags.Value()
+			if len(headers) > 0 {
+				headersMap = make(map[string]string)
+				for _, header := range headers {
+					idx := strings.Index(header, ":")
+					if idx < 0 {
+						return fmt.Errorf("Invalid header: %s", header)
+					}
+					k := header[:idx]
+					v := header[idx+1:]
+					headersMap[strings.TrimSpace(k)] = strings.TrimSpace(v)
+				}
+				handler = customHeadersHandler(handler, headersMap)
 			}
 
 			server = &http.Server{
