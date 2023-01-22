@@ -6,7 +6,7 @@ It's like `python -m SimpleHTTPServer`, but with support for gzip and HTTP/2.
 ## Installation
 
 ```bash
-go get github.com/rhardih/serve
+go install github.com/rhardih/serve/v2@latest
 ```
 
 ## Usage
