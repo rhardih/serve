@@ -23,22 +23,22 @@ USAGE:
    serve [global options] command [command options] [arguments...]
 
 VERSION:
-   1.2.0
+   2.0.0
 
 COMMANDS:
    help, h  Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:
-   --gzip, -g                enable gzip encoding (default: false)
-   --port value, -p value    specify port for listening (default: 8080)
-   --logging, -l             enable logging output (default: false)
-   --http2, -2               enable http2, this generates a self signed
-                             certificate, if one isn't already present; cert.pem,
-                             key.pem (default: false)
-   --header value, -H value  custom header(s) to add to the response (can be
-                             repeated multiple times)
-   --help, -h                show help (default: false)
-   --version, -v             print the version (default: false)  
+   --gzip, -g                    enable gzip encoding (default: false)
+   --port value, -p value        specify port for listening (default: 8080)
+   --logging, -l                 enable logging output (default: false)
+   --http2, -2                   enable http2, this generates a self signed certificate, if one isn't already present; cert.pem, key.pem (default: false)
+   --header value, -H value      custom header(s) to add to the response (can be repeated multiple times)
+   --cert-save, --sc             whether to save the generated self-signed certificates to disk (default: false)
+   --cert-dir value, --cd value  location to save certificate at if saving to disk (default: "/Users/rene/.serve")
+   --help, -h                    show help (default: false)
+   --version, -v                 print the version (default: false)
+
 ```
 
 ## Note
