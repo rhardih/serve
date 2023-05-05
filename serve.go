@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	httpgzip "github.com/daaku/go.httpgzip"
+	"github.com/NYTimes/gziphandler"
 	"github.com/urfave/cli/v2"
 
 	"crypto/ecdsa"
@@ -239,7 +239,7 @@ func main() {
 			handler := http.FileServer(http.Dir(path))
 
 			if gzip {
-				handler = httpgzip.NewHandler(handler)
+				handler = gziphandler.GzipHandler(handler)
 			}
 
 			if logging {
