@@ -1,10 +1,10 @@
-module github.com/rhardih/serve/v2
+module github.com/rhardih/serve/v3
 
 go 1.19
 
 require (
-    github.com/urfave/cli/v2 v2.23.7
-    github.com/NYTimes/gziphandler v1.1.1
+	github.com/NYTimes/gziphandler v1.1.1
+	github.com/urfave/cli/v2 v2.23.7
 )
 
 require (
