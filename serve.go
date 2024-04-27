@@ -126,7 +126,7 @@ func generateOnDiskCert(path string) (string, string) {
 
 		keyOut, err := os.OpenFile(keyPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 		if err != nil {
-			log.Print("failed to open %s for writing:", keyPath, err)
+			log.Printf("failed to open %s for writing: %s", keyPath, err)
 			return "", ""
 		}
 
@@ -252,7 +252,7 @@ func main() {
 				for _, header := range headers {
 					idx := strings.Index(header, ":")
 					if idx < 0 {
-						return fmt.Errorf("Invalid header: %s", header)
+						return fmt.Errorf("invalid header: %s", header)
 					}
 					k := header[:idx]
 					v := header[idx+1:]
@@ -315,7 +315,7 @@ func main() {
 				go serveHttp()
 			}
 
-			log.Println(fmt.Sprintf("Serving content of %s on localhost:%v ...", path, port))
+			log.Printf("Serving content of %s on localhost:%v ...", path, port)
 
 			signal.Notify(stop, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
